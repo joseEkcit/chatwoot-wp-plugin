@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name:     Chatwoot Plugin
  * Plugin URI:      https://www.chatwoot.com/
@@ -19,11 +20,12 @@ add_action('admin_enqueue_scripts', 'admin_styles');
  *
  * @return {void}.
  */
-function admin_styles() {
+function admin_styles()
+{
   wp_enqueue_style('admin-styles', plugin_dir_url(__FILE__) . '/admin.css');
 }
 
- add_action( 'wp_enqueue_scripts', 'chatwoot_assets' );
+add_action('wp_enqueue_scripts', 'chatwoot_assets');
 /**
  * Load Chatwoot Assets.
  *
@@ -31,11 +33,18 @@ function admin_styles() {
  *
  * @return {void}.
  */
-function chatwoot_assets() {
-    wp_enqueue_script( 'chatwoot-client', plugins_url( '/js/chatwoot.js' , __FILE__ ) );
+function chatwoot_assets()
+{
+  /**
+   * Use this filter to disable loading of Chatwoot assets per request.
+   * @return {boolean}
+   */
+  $should_load_scripts = apply_filters('chatwoot_load_scripts', true);
+  if (!$should_load_scripts) return;
+  wp_enqueue_script('chatwoot-client', plugins_url('/js/chatwoot.js', __FILE__));
 }
 
-add_action( 'wp_enqueue_scripts', 'chatwoot_load' );
+add_action('wp_enqueue_scripts', 'chatwoot_load');
 /**
  * Initialize embed code options.
  *
@@ -43,7 +52,8 @@ add_action( 'wp_enqueue_scripts', 'chatwoot_load' );
  *
  * @return {void}.
  */
-function chatwoot_load() {
+function chatwoot_load()
+{
 
   // Get our site options for site url and token.
   $chatwoot_url = get_option('chatwootSiteURL');
@@ -70,11 +80,12 @@ add_action('admin_menu', 'chatwoot_setup_menu');
  *
  * @return {void}.
  */
-function chatwoot_setup_menu(){
-    add_options_page('Option', 'Chatwoot Settings', 'manage_options', 'chatwoot-plugin-options', 'chatwoot_options_page');
+function chatwoot_setup_menu()
+{
+  add_options_page('Option', 'Chatwoot Settings', 'manage_options', 'chatwoot-plugin-options', 'chatwoot_options_page');
 }
 
-add_action( 'admin_init', 'chatwoot_register_settings' );
+add_action('admin_init', 'chatwoot_register_settings');
 /**
  * Register Settings.
  *
@@ -82,7 +93,8 @@ add_action( 'admin_init', 'chatwoot_register_settings' );
  *
  * @return {void}.
  */
-function chatwoot_register_settings() {
+function chatwoot_register_settings()
+{
   add_option('chatwootSiteToken', '');
   add_option('chatwootSiteURL', '');
   add_option('chatwootWidgetLocale', 'en');
@@ -90,12 +102,12 @@ function chatwoot_register_settings() {
   add_option('chatwootWidgetPosition', 'right');
   add_option('chatwootLauncherText', '');
 
-  register_setting('chatwoot-plugin-options', 'chatwootSiteToken' );
+  register_setting('chatwoot-plugin-options', 'chatwootSiteToken');
   register_setting('chatwoot-plugin-options', 'chatwootSiteURL');
-  register_setting('chatwoot-plugin-options', 'chatwootWidgetLocale' );
-  register_setting('chatwoot-plugin-options', 'chatwootWidgetType' );
-  register_setting('chatwoot-plugin-options', 'chatwootWidgetPosition' );
-  register_setting('chatwoot-plugin-options', 'chatwootLauncherText' );
+  register_setting('chatwoot-plugin-options', 'chatwootWidgetLocale');
+  register_setting('chatwoot-plugin-options', 'chatwootWidgetType');
+  register_setting('chatwoot-plugin-options', 'chatwootWidgetPosition');
+  register_setting('chatwoot-plugin-options', 'chatwootLauncherText');
 }
 
 /**
@@ -105,27 +117,20 @@ function chatwoot_register_settings() {
  *
  * @return {void}.
  */
-function chatwoot_options_page() {
-  ?>
+function chatwoot_options_page()
+{
+?>
   <div>
     <h2>Chatwoot Settings</h2>
     <form method="post" action="options.php" class="chatwoot--form">
       <?php settings_fields('chatwoot-plugin-options'); ?>
       <div class="form--input">
         <label for="chatwootSiteToken">Chatwoot Website Token</label>
-        <input
-          type="text"
-          name="chatwootSiteToken"
-          value="<?php echo get_option('chatwootSiteToken'); ?>"
-        />
+        <input type="text" name="chatwootSiteToken" value="<?php echo get_option('chatwootSiteToken'); ?>" />
       </div>
       <div class="form--input">
         <label for="chatwootSiteURL">Chatwoot Installation URL</label>
-        <input
-          type="text"
-          name="chatwootSiteURL"
-          value="<?php echo get_option('chatwootSiteURL'); ?>"
-        />
+        <input type="text" name="chatwootSiteURL" value="<?php echo get_option('chatwootSiteURL'); ?>" />
       </div>
       <hr />
 
@@ -183,11 +188,7 @@ function chatwoot_options_page() {
       <?php if (get_option('chatwootWidgetType') == 'expanded_bubble') : ?>
         <div class="form--input">
           <label for="chatwootLauncherText">Launcher Text (Optional)</label>
-          <input
-            type="text"
-            name="chatwootLauncherText"
-            value="<?php echo get_option('chatwootLauncherText'); ?>"
-          />
+          <input type="text" name="chatwootLauncherText" value="<?php echo get_option('chatwootLauncherText'); ?>" />
         </div>
       <?php endif; ?>
       <?php submit_button(); ?>
